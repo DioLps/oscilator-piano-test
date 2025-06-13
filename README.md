@@ -1,4 +1,7 @@
 # oscilator-piano-test
 
 
-<img style="margin: 0 auto;" src="/Screenshot%202025-06-13%20at%2017.49.16.png" />
+<div style="display:flex; justify-content:center;" >
+
+<img  src="/Screenshot%202025-06-13%20at%2017.49.16.png" />
+</div>
