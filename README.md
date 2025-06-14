@@ -1,7 +1,7 @@
 # oscilator-piano-test
 
+Please don't judge, I vibe code this to understand how oscilator works. Lol
 
-<div style="display:flex; justify-content:center;" >
-
-<img  src="/Screenshot%202025-06-13%20at%2017.49.16.png" />
-</div>
+<p style="text-align:center" >
+ <img  src=".github/banner.png" />
+</p>
