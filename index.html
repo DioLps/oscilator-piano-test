@@ -12,7 +12,7 @@
 
 <body>
   <div class="container">
-    <h1>🎹 Interactive Piano</h1>
+    <h1 class="title">🎹 Interactive Piano</h1>
 
     <div class="controls">
       <div class="octave-controls">
@@ -32,14 +32,16 @@
           <br>Use <strong>A, S, D, F, G, H, J AND K</strong> keys to play white notes
         </small>
       </div>
-      <div class="volume-control">
-        <label for="volume">Volume: </label>
-        <input type="range" id="volume" class="volume-slider" min="0" max="100" value="30">
-        <span id="volume-value">30%</span>
-      </div>
-      <div class="effect-box">
-        <label><input type="checkbox" id="reverb-toggle" /> Reverb</label>
-        <label><input type="checkbox" id="vibrato-toggle" /> Vibrato</label>
+      <div class="settings">
+        <div class="volume-control">
+          <label for="volume">Volume: </label>
+          <input type="range" id="volume" class="volume-slider" min="0" max="100" value="30">
+          <span id="volume-value">30%</span>
+        </div>
+        <div class="effect-box">
+          <label><input type="checkbox" id="reverb-toggle" /> Reverb</label>
+          <label><input type="checkbox" id="vibrato-toggle" /> Vibrato</label>
+        </div>
       </div>
     </div> <!-- end of controls -->
 
