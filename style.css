@@ -120,6 +120,7 @@ h1 {
   position: absolute;
 }
 
+
 .key:hover {
   transform: translateY(-2px);
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
@@ -209,7 +210,7 @@ h1 {
 }
 
 /* Responsive adjustments for mobile */
-@media (max-width: 600px) {
+@media (max-width: 768px) {
   body {
     padding: 10px;
   }
@@ -239,5 +240,18 @@ h1 {
 
   .current-frequency {
     font-size: 0.9em;
+  }
+
+  .key{
+    position: relative;
+  }
+
+  .white-key{
+    position: relative;
+    left: unset !important;
+  }
+
+  .black-key{
+    position: absolute;
   }
 }
