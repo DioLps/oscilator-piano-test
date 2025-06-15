@@ -137,8 +137,7 @@ h1 {
   border: 2px solid #ccc;
   z-index: 1;
   color: #333;
-  position: relative;
-  flex: none;
+  position: absolute;
 }
 
 .black-key {
@@ -148,9 +147,8 @@ h1 {
   border: 2px solid #000;
   z-index: 2;
   color: #fff;
-  top: -12px;
-  /* lift to align with white key top border */
   position: absolute;
+  top: 0;
 }
 
 .playing {
