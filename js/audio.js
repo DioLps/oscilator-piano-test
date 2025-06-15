@@ -116,8 +116,7 @@ export function playNote(note, octave, keyElement, useVibrato = false) {
 
       // Start playing
       oscillator.start();
-      
-      // Store the oscillator and gain nodes
+        // Store the oscillator and gain nodes
       activeOscillators.set(noteKey, { oscillator, gainNode: noteGain, keyElement });
       
       // Import effects module to check if vibrato is enabled
@@ -128,13 +127,9 @@ export function playNote(note, octave, keyElement, useVibrato = false) {
           effects.addVibratoToOsc(noteKey);
         }
       });
-
-      // Auto-stop after 5 seconds (increased for polyphony)
-      setTimeout(() => {
-        if (activeOscillators.has(noteKey)) {
-          stopNote(noteKey, keyElement);
-        }
-      }, 5000);
+      
+      // Notes will continue playing until explicitly stopped
+      // No auto-stop timeout anymore
     } catch (e) {
       console.error('Error playing note:', e);
     }

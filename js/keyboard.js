@@ -87,3 +87,8 @@ function handleKeyUp(e) {
     stopNote(noteKey, keyElement);
   }
 }
+
+// Export pressedKeys for other modules to use
+export function getPressedKeys() {
+  return pressedKeys;
+}

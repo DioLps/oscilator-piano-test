@@ -215,17 +215,19 @@ export function changeOctave(direction) {
     // Get currently playing notes before changing octave
     const currentlyPlayingNotes = [];
 
-    // Check keyboard pressed keys
-    const keyboardMap = {
-        'a': 'C', 'w': 'C#', 's': 'D', 'e': 'D#', 'd': 'E', 'f': 'F',
-        't': 'F#', 'g': 'G', 'y': 'G#', 'h': 'A', 'u': 'A#', 'j': 'B'
-    };
-
-    // Check if the keyboard module is available (to avoid circular dependencies)
-    try {
-        const keyboardModule = require('./keyboard.js');
-        if (keyboardModule.pressedKeys) {
-            keyboardModule.pressedKeys.forEach(key => {
+    // Use dynamic import to avoid circular dependencies
+    Promise.all([
+        import('./keyboard.js'),
+        import('./audio.js')
+    ]).then(([keyboard, audio]) => {
+        const keyboardMap = {
+            'a': 'C', 'w': 'C#', 's': 'D', 'e': 'D#', 'd': 'E', 'f': 'F',
+            't': 'F#', 'g': 'G', 'y': 'G#', 'h': 'A', 'u': 'A#', 'j': 'B', 'k': 'C'
+        };
+        
+        // Collect keyboard pressed notes
+        if (keyboard.getPressedKeys && keyboard.getPressedKeys().size > 0) {
+            keyboard.getPressedKeys().forEach(key => {
                 const note = keyboardMap[key.toLowerCase()];
                 if (note) {
                     currentlyPlayingNotes.push({
@@ -236,33 +238,43 @@ export function changeOctave(direction) {
                 }
             });
         }
-    } catch (e) {
-        console.log('Keyboard module not available for pressed keys');
-    }
-
-    // Check mouse pressed keys
-    pressedMouseKeys.forEach(note => {
-        currentlyPlayingNotes.push({
-            note: note,
-            source: 'mouse',
-            element: document.querySelector(`[data-note="${note}"]`)
+        
+        // Add mouse pressed keys
+        pressedMouseKeys.forEach(note => {
+            currentlyPlayingNotes.push({
+                note: note,
+                source: 'mouse',
+                element: document.querySelector(`[data-note="${note}"]`)
+            });
         });
+        
+        // Always stop all current notes when changing octaves - this ensures
+        // notes don't keep playing indefinitely, since we removed the timeout
+        audio.stopAllNotes();
+        
+        // Change octave
+        setCurrentOctave(newOctave);
+        generatePiano();
+    
+        // Restart notes in new octave after a brief delay
+        setTimeout(() => {
+            // Only continue notes that are still being held down
+            currentlyPlayingNotes.forEach(noteInfo => {
+                // Check if the note's key is still being pressed
+                const isStillPressed = 
+                    (noteInfo.source === 'keyboard' && keyboard.getPressedKeys().has(
+                        Object.keys(keyboardMap).find(k => keyboardMap[k] === noteInfo.note)
+                    )) || 
+                    (noteInfo.source === 'mouse' && pressedMouseKeys.has(noteInfo.note));
+                
+                if (isStillPressed) {
+                    const newElement = document.querySelector(`[data-note="${noteInfo.note}"]`);
+                    if (newElement) {
+                        audio.playNote(noteInfo.note, newOctave, newElement);
+                    }
+                }
+            });        }, 50); // Small delay to ensure clean transition
+    }).catch(e => {
+        console.error('Error handling octave change:', e);
     });
-
-    // Stop all current notes
-    stopAllNotes();
-
-    // Change octave
-    setCurrentOctave(newOctave);
-    generatePiano();
-
-    // Restart notes in new octave after a brief delay
-    setTimeout(() => {
-        currentlyPlayingNotes.forEach(noteInfo => {
-            const newElement = document.querySelector(`[data-note="${noteInfo.note}"]`);
-            if (newElement) {
-                playNote(noteInfo.note, newOctave, newElement);
-            }
-        });
-    }, 50); // Small delay to ensure clean transition
 }

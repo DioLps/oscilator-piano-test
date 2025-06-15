@@ -242,16 +242,20 @@ h1 {
     font-size: 0.9em;
   }
 
-  .key{
+  .key {
     position: relative;
   }
 
-  .white-key{
+  .white-key {
     position: relative;
     left: unset !important;
   }
 
-  .black-key{
+  .black-key {
     position: absolute;
+  }
+
+  .keys-help {
+    display: none;
   }
 }
