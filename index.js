@@ -329,8 +329,12 @@ function handleKeyPress(event, note) {
   // Track that this key is being pressed via mouse
   pressedMouseKeys.add(note);
 
-  // Just play the note
-  playNote(note, currentOctave, event.target, event.shiftKey);
+  // Use next octave if this is the last C key (with isNextOctave flag)
+  const octave = (note === 'C' && event.target.dataset.octave && parseInt(event.target.dataset.octave) > currentOctave) ? 
+                 currentOctave + 1 : currentOctave;
+  
+  // Play the note with the correct octave
+  playNote(note, octave, event.target, event.shiftKey);
 }
 
 // Handle key release
@@ -338,7 +342,11 @@ function handleKeyRelease(event, note) {
   // Remove from pressed mouse keys
   pressedMouseKeys.delete(note);
 
-  const noteKey = `${note}${currentOctave}`;
+  // Use next octave if this is the last C key (with isNextOctave flag)
+  const octave = (note === 'C' && event.target.dataset.octave && parseInt(event.target.dataset.octave) > currentOctave) ? 
+                 currentOctave + 1 : currentOctave;
+  const noteKey = `${note}${octave}`;
+  
   stopNote(noteKey, event.target);
 }
 
