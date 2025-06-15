@@ -111,7 +111,8 @@
       cursor: pointer;
       transition: all 0.1s ease;
       user-select: none;
-      touch-action: none; /* Prevent default touch behaviors */
+      touch-action: none;
+      /* Prevent default touch behaviors */
       border-radius: 0 0 8px 8px;
       display: flex;
       align-items: flex-end;
@@ -192,12 +193,17 @@
       margin: 0 10px;
     }
 
-    .off {
-      color: #ff6b6b;
+    .effect-box {
+      width: 100%;
+      display: flex;
+      align-content: center;
+      justify-content: center;
+      column-gap: 16px;
     }
-    
-    .on {
-      color: #6bff6b;
+
+    .effect-item input[type=checkbox] {
+      margin-right: 8px;
+      transform: scale(1.2);
     }
   </style>
 </head>
@@ -216,19 +222,20 @@
       </div>
       <div class="instructions">
         Use <strong>↑↓ arrow keys</strong> or buttons above to change octaves while playing<br>
-        Hold <strong>Shift</strong> while playing to enable vibrato effect<br>
-        <small style="opacity: 0.7;">Click anywhere to enable audio first | Press <strong>Space</strong> to stop
-          all notes | Hold <strong>Shift</strong> to toggle vibrato</small>
+        <small style="opacity: 0.7;">
+          Click anywhere to enable audio first | Press <strong>Space</strong> to stop all notes
+        </small>
       </div>
       <div class="volume-control">
         <label for="volume">Volume: </label>
         <input type="range" id="volume" class="volume-slider" min="0" max="100" value="30">
         <span id="volume-value">30%</span>
       </div>
-      <div class="reverb-control" style="text-align:center; color:white;" onclick="toggleReverb()">
-        Reverb: <span id="reverb-status" class="off">Off</span> (Hold <strong>Ctrl</strong>) or click to toggle
+      <div class="effect-box">
+        <label><input type="checkbox" id="reverb-toggle" /> Reverb</label>
+        <label><input type="checkbox" id="vibrato-toggle" /> Vibrato</label>
       </div>
-    </div>
+    </div> <!-- end of controls -->
 
     <div class="piano" id="piano">
       <!-- Piano keys will be generated here -->
@@ -413,46 +420,30 @@
     // Toggle reverb effect on or off and update UI
     function toggleReverb() {
       reverbEnabled = !reverbEnabled;
-      // Ensure audioContext initialized
       if (!audioContext) initAudio();
       reverbGain.gain.setValueAtTime(reverbEnabled ? 1 : 0, audioContext.currentTime);
-      document.getElementById('reverb-status').textContent = reverbEnabled ? 'On' : 'Off';
-      document.getElementById('reverb-status').className = reverbEnabled ? 'on' : 'off';
+      // Reflect state in checkbox
+      const revToggle = document.getElementById('reverb-toggle');
+      if (revToggle) revToggle.checked = reverbEnabled;
     }
 
-    // Toggle vibrato on currently playing notes when Shift is pressed
-    document.addEventListener('keydown', e => {
-      if (e.key === 'Shift' && !vibratoEnabled) {
-        vibratoEnabled = true;
-        activeOscillators.forEach((_, key) => addVibratoToOsc(key));
-      }
-    });
-    document.addEventListener('keyup', e => {
-      if (e.key === 'Shift' && vibratoEnabled) {
-        vibratoEnabled = false;
-        activeOscillators.forEach((_, key) => removeVibratoFromOsc(key));
-      }
-    });
-
-    // Reverb toggle on Ctrl press
-    let ctrlToggleHandled = false;
-    document.addEventListener('keydown', e => {
-      if (e.key === 'Control' && !ctrlToggleHandled) {
-        ctrlToggleHandled = true;
-        toggleReverb();
-      }
-    });
-    document.addEventListener('keyup', e => {
-      if (e.key === 'Control') {
-        ctrlToggleHandled = false;
-      }
-    });
+    // Toggle vibrato effect on/off via checkbox
+    function toggleVibrato() {
+      vibratoEnabled = !vibratoEnabled;
+      if (!audioContext) initAudio();
+      activeOscillators.forEach((_, noteKey) => {
+        if (vibratoEnabled) addVibratoToOsc(noteKey);
+        else removeVibratoFromOsc(noteKey);
+      });
+      const vibToggle = document.getElementById('vibrato-toggle');
+      if (vibToggle) vibToggle.checked = vibratoEnabled;
+    }
 
     // Note layout for piano keys (white in flex, black absolutely positioned)
     const whiteWidth = 50;
     const blackWidth = 30;
-    const borderWidth = 45; // match CSS border
-    const offset = whiteWidth - blackWidth / 2 + borderWidth; // center black over white boundary
+    const borderWidth = 25; // match CSS border
+    const offset = whiteWidth - blackWidth / 2 + 10
     const noteLayout = [
       { note: 'C', type: 'white' },
       { note: 'C#', type: 'black', position: offset },
@@ -840,27 +831,18 @@
       setupVolumeControl();
       setupKeyboardSupport();
 
+      // Effects toggles using checkboxes
+      const vibToggle = document.getElementById('vibrato-toggle');
+      if (vibToggle) vibToggle.addEventListener('change', toggleVibrato);
+      const revToggle = document.getElementById('reverb-toggle');
+      if (revToggle) revToggle.addEventListener('change', toggleReverb);
+
       // Add click handler to initialize audio context on first interaction
       document.addEventListener('click', () => {
         if (!audioContext) {
           initAudio();
         }
       }, { once: true });
-
-      // Also try to initialize on any user interaction
-      ['mousedown', 'keydown', 'touchstart'].forEach(eventType => {
-        document.addEventListener(eventType, () => {
-          if (!audioContext) {
-            initAudio();
-          }
-        }, { once: true });
-      });
-      // Click reverb status to toggle reverb
-      const reverbControl = document.getElementById('reverb-status');
-      if (reverbControl) {
-        reverbControl.style.cursor = 'pointer';
-        reverbControl.addEventListener('click', () => toggleReverb());
-      }
     });
   </script>
 </body>
