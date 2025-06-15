@@ -1,5 +1,3 @@
-
-
 const freqTable = [
   { note: "A0", frequency: 27.50 },
   { note: "A#0", frequency: 29.14 },
@@ -205,8 +203,24 @@ function getKeyWidths() {
 
 // Get initial widths
 const { whiteWidth, blackWidth } = getKeyWidths();
-const borderWidth = 45; // match CSS border
-const offset = whiteWidth - blackWidth / 2 + borderWidth; // center black over white boundary
+const borderWidth = 30; // match CSS border
+const offset = whiteWidth - blackWidth / 2; // center black over white boundary
+
+const noteLayout = [
+  { note: 'C', type: 'white' },
+  { note: 'C#', type: 'black', position: offset },
+  { note: 'D', type: 'white' },
+  { note: 'D#', type: 'black', position: whiteWidth + offset },
+  { note: 'E', type: 'white' },
+  { note: 'F', type: 'white' },
+  { note: 'F#', type: 'black', position: 3 * whiteWidth + offset + 8 },
+  { note: 'G', type: 'white' },
+  { note: 'G#', type: 'black', position: 4 * whiteWidth + offset + 10 },
+  { note: 'A', type: 'white' },
+  { note: 'A#', type: 'black', position: 5 * whiteWidth + offset + 14 },
+  { note: 'B', type: 'white' },
+  { note: 'C', type: 'white', isNextOctave: true }
+];
 
 // Piano key generation and layout logic here
 // Generate piano keys
@@ -216,7 +230,6 @@ function generatePiano() {
 
   // Recalculate widths for responsive layout
   const { whiteWidth, blackWidth } = getKeyWidths();
-  const offset = whiteWidth - blackWidth / 2 + borderWidth;
 
   noteLayout.forEach((noteInfo, idx) => {
     const key = document.createElement('div');
@@ -276,22 +289,6 @@ document.addEventListener('DOMContentLoaded', () => {
   initAudio();
   generatePiano();
 });
-
-const noteLayout = [
-  { note: 'C', type: 'white' },
-  { note: 'C#', type: 'black', position: offset },
-  { note: 'D', type: 'white' },
-  { note: 'D#', type: 'black', position: whiteWidth + offset },
-  { note: 'E', type: 'white' },
-  { note: 'F', type: 'white' },
-  { note: 'F#', type: 'black', position: 3 * whiteWidth + offset + 8 },
-  { note: 'G', type: 'white' },
-  { note: 'G#', type: 'black', position: 4 * whiteWidth + offset + 10 },
-  { note: 'A', type: 'white' },
-  { note: 'A#', type: 'black', position: 5 * whiteWidth + offset + 14 },
-  { note: 'B', type: 'white' },
-  { note: 'C', type: 'white', isNextOctave: true }
-];
 
 // Initialize audio context
 function initAudio() {
