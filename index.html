@@ -26,13 +26,16 @@
       padding: 30px;
       box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
       border: 1px solid rgba(255, 255, 255, 0.2);
+      width: 100%;
+      max-width: 800px;
+      box-sizing: border-box;
     }
 
     h1 {
       color: white;
       text-align: center;
       margin-bottom: 10px;
-      font-size: 2.5em;
+      font-size: clamp(1.8em, 5vw, 2.5em);
       text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
     }
 
@@ -44,6 +47,7 @@
       flex-direction: column;
       align-items: center;
       gap: 15px;
+      width: 100%;
     }
 
     .octave-controls {
@@ -51,6 +55,8 @@
       align-items: center;
       gap: 15px;
       margin-bottom: 10px;
+      flex-wrap: wrap;
+      justify-content: center;
     }
 
     .octave-btn {
@@ -103,8 +109,9 @@
       justify-content: center;
       align-items: flex-end;
       position: relative;
-      margin: 16px 0;
+      margin: 16px auto;
       height: 200px;
+      width: 100%;
     }
 
     .key {
@@ -134,7 +141,7 @@
     }
 
     .white-key {
-      width: 50px;
+      width: clamp(30px, 8vw, 50px);
       height: 200px;
       background: linear-gradient(to bottom, #ffffff, #f0f0f0);
       border: 2px solid #ccc;
@@ -145,7 +152,7 @@
     }
 
     .black-key {
-      width: 30px;
+      width: clamp(20px, 5vw, 30px);
       height: 120px;
       background: linear-gradient(to bottom, #333, #000);
       border: 2px solid #000;
@@ -167,9 +174,11 @@
       padding: 15px;
       border-radius: 10px;
       margin: 0 auto;
-      width: 414px;
+      width: 100%;
+      max-width: 414px;
       text-align: center;
       font-family: 'Courier New', monospace;
+      box-sizing: border-box;
     }
 
     .current-note {
@@ -186,10 +195,13 @@
       display: flex;
       align-items: center;
       text-align: center;
+      flex-wrap: wrap;
+      justify-content: center;
+      width: 100%;
     }
 
     .volume-slider {
-      width: 200px;
+      width: clamp(120px, 60%, 200px);
       margin: 0 10px;
     }
 
@@ -199,11 +211,47 @@
       align-content: center;
       justify-content: center;
       column-gap: 16px;
+      flex-wrap: wrap;
+      row-gap: 8px;
     }
 
     .effect-item input[type=checkbox] {
       margin-right: 8px;
       transform: scale(1.2);
+    }
+
+    /* Responsive adjustments for mobile */
+    @media (max-width: 600px) {
+      body {
+        padding: 10px;
+      }
+
+      .container {
+        padding: 15px;
+        border-radius: 15px;
+      }
+
+      .instructions {
+        font-size: 0.85em;
+      }
+
+      .octave-btn {
+        padding: 8px 12px;
+        font-size: 1em;
+      }
+
+      .octave-display {
+        font-size: 1em;
+        padding: 8px 12px;
+      }
+
+      .current-note {
+        font-size: 1.2em;
+      }
+
+      .current-frequency {
+        font-size: 0.9em;
+      }
     }
   </style>
 </head>
@@ -248,6 +296,8 @@
   </div>
 
   <script>
+
+
     const freqTable = [
       { note: "A0", frequency: 27.50 },
       { note: "A#0", frequency: 29.14 },
@@ -440,10 +490,91 @@
     }
 
     // Note layout for piano keys (white in flex, black absolutely positioned)
-    const whiteWidth = 50;
-    const blackWidth = 30;
-    const borderWidth = 25; // match CSS border
-    const offset = whiteWidth - blackWidth / 2 + 10
+    // Get dynamic sizing based on CSS variables or viewport width
+    function getKeyWidths() {
+      // Get a computed white key width (use actual DOM or fallback to responsive values)
+      const computedWhiteWidth = Math.min(50, Math.max(30, window.innerWidth / 16));
+      const computedBlackWidth = computedWhiteWidth * 0.6; // Black keys are 60% of white key width
+      return {
+        whiteWidth: computedWhiteWidth,
+        blackWidth: computedBlackWidth
+      };
+    }
+
+    // Get initial widths
+    const { whiteWidth, blackWidth } = getKeyWidths();
+    const borderWidth = 45; // match CSS border
+    const offset = whiteWidth - blackWidth / 2 + borderWidth; // center black over white boundary
+
+    // Piano key generation and layout logic here
+    // Generate piano keys
+    function generatePiano() {
+      const piano = document.getElementById('piano');
+      piano.innerHTML = '';
+
+      // Recalculate widths for responsive layout
+      const { whiteWidth, blackWidth } = getKeyWidths();
+      const offset = whiteWidth - blackWidth / 2 + borderWidth;
+
+      noteLayout.forEach((noteInfo, idx) => {
+        const key = document.createElement('div');
+        key.className = `key ${noteInfo.type}-key`;
+        key.dataset.note = noteInfo.note;
+        const octave = noteInfo.isNextOctave ? currentOctave + 1 : currentOctave;
+        key.dataset.octave = octave;
+        key.textContent = noteInfo.note;
+
+        // Set calculated widths directly on elements for responsiveness
+        if (noteInfo.type === 'white') {
+          key.style.width = `${whiteWidth}px`;
+        } else {
+          key.style.width = `${blackWidth}px`;
+          key.style.left = `${noteInfo.position * (whiteWidth / 50)}px`; // Scale position based on actual white key width
+        }
+
+        key.addEventListener('mousedown', (e) => handleKeyPress(e, noteInfo.note));
+        key.addEventListener('mouseup', (e) => handleKeyRelease(e, noteInfo.note));
+        key.addEventListener('mouseleave', (e) => handleKeyRelease(e, noteInfo.note));
+        // Touch events for mobile support
+        key.addEventListener('touchstart', (e) => handleKeyPress(e, noteInfo.note), { passive: false });
+        key.addEventListener('touchend', (e) => handleKeyRelease(e, noteInfo.note), { passive: false });
+        key.addEventListener('touchcancel', (e) => handleKeyRelease(e, noteInfo.note), { passive: false });
+
+        piano.appendChild(key);
+      });
+
+      // Set piano container width based on key count for proper scrolling
+      const totalWhiteKeys = noteLayout.filter(n => n.type === 'white').length;
+      piano.style.width = `${totalWhiteKeys * whiteWidth + 20}px`; // Add padding
+    }
+
+    // Initialize everything when the page loads
+    document.addEventListener('DOMContentLoaded', () => {
+      generatePiano();
+      setupOctaveControls();
+      setupVolumeControl();
+      setupKeyboardSupport();
+
+      // Handle window resize for responsive layout
+      let resizeTimer;
+      window.addEventListener('resize', () => {
+        // Debounce the resize event
+        clearTimeout(resizeTimer);
+        resizeTimer = setTimeout(() => {
+          generatePiano(); // Rebuild piano with new dimensions
+        }, 250);
+      });
+
+      // Effects toggles using checkboxes
+      const vibToggle = document.getElementById('vibrato-toggle');
+      if (vibToggle) vibToggle.addEventListener('change', toggleVibrato);
+      const revToggle = document.getElementById('reverb-toggle');
+      if (revToggle) revToggle.addEventListener('change', toggleReverb);
+
+      initAudio();
+      generatePiano();
+    });
+
     const noteLayout = [
       { note: 'C', type: 'white' },
       { note: 'C#', type: 'black', position: offset },
@@ -490,34 +621,6 @@
         console.error('Web Audio API not supported:', e);
         alert('Sorry, your browser does not support Web Audio API. Please use a modern browser.');
       }
-    }
-
-    // Generate piano keys
-    function generatePiano() {
-      const piano = document.getElementById('piano');
-      piano.innerHTML = '';
-
-      noteLayout.forEach((noteInfo, idx) => {
-        const key = document.createElement('div');
-        key.className = `key ${noteInfo.type}-key`;
-        key.dataset.note = noteInfo.note;
-        const octave = noteInfo.isNextOctave ? currentOctave + 1 : currentOctave;
-        key.dataset.octave = octave;
-        key.textContent = noteInfo.note;
-        if (noteInfo.type === 'black') {
-          key.style.left = `${noteInfo.position}px`;
-        }
-
-        key.addEventListener('mousedown', (e) => handleKeyPress(e, noteInfo.note));
-        key.addEventListener('mouseup', (e) => handleKeyRelease(e, noteInfo.note));
-        key.addEventListener('mouseleave', (e) => handleKeyRelease(e, noteInfo.note));
-        // Touch events for mobile support
-        key.addEventListener('touchstart', (e) => handleKeyPress(e, noteInfo.note), { passive: false });
-        key.addEventListener('touchend', (e) => handleKeyRelease(e, noteInfo.note), { passive: false });
-        key.addEventListener('touchcancel', (e) => handleKeyRelease(e, noteInfo.note), { passive: false });
-
-        piano.appendChild(key);
-      });
     }
 
     // Handle key press with simplified modifier detection
@@ -824,26 +927,7 @@
       });
     }
 
-    // Initialize everything when the page loads
-    document.addEventListener('DOMContentLoaded', () => {
-      generatePiano();
-      setupOctaveControls();
-      setupVolumeControl();
-      setupKeyboardSupport();
 
-      // Effects toggles using checkboxes
-      const vibToggle = document.getElementById('vibrato-toggle');
-      if (vibToggle) vibToggle.addEventListener('change', toggleVibrato);
-      const revToggle = document.getElementById('reverb-toggle');
-      if (revToggle) revToggle.addEventListener('change', toggleReverb);
-
-      // Add click handler to initialize audio context on first interaction
-      document.addEventListener('click', () => {
-        if (!audioContext) {
-          initAudio();
-        }
-      }, { once: true });
-    });
   </script>
 </body>
 
