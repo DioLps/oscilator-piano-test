@@ -211,6 +211,21 @@ h1 {
   transform: scale(1.2);
 }
 
+.language-selector {
+  position: absolute;
+  bottom: 20px;
+  right: 20px;
+}
+
+.language-selector a {
+  display: block;
+  transition: transform 0.2s;
+}
+
+.language-selector a:hover {
+  transform: scale(1.2);
+}
+
 /* Responsive adjustments for mobile */
 @media (max-width: 768px) {
   body {
@@ -280,19 +295,4 @@ h1 {
   .title {
     margin-bottom: 1.5rem;
   }
-}
-
-.language-selector {
-  position: absolute;
-  bottom: 20px;
-  right: 20px;
-}
-
-.language-selector a {
-  display: block;
-  transition: transform 0.2s;
-}
-
-.language-selector a:hover {
-  transform: scale(1.2);
 }
