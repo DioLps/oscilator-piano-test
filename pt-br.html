@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="pt-BR">
 
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>🎹 Interactive Piano</title>
+  <title>🎹 Piano Interativo</title>
   <link rel="icon"
     href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎹</text></svg>">
   <link rel="stylesheet" href="style.css">
@@ -12,24 +12,24 @@
 
 <body>
   <div class="container">
-    <h1 class="title">🎹 Interactive Piano</h1>
+    <h1 class="title">🎹 Piano Interativo</h1>
 
     <div class="controls">
       <div class="octave-controls">
-        <button class="octave-btn" id="octave-down">⬇️ Down</button>
+        <button class="octave-btn" id="octave-down">⬇️ Baixo</button>
         <div class="octave-display">
-          Octave: <span id="current-octave">4</span>
+          Oitava: <span id="current-octave">4</span>
         </div>
-        <button class="octave-btn" id="octave-up">⬆️ Up</button>
+        <button class="octave-btn" id="octave-up">⬆️ Cima</button>
       </div>
       <div class="instructions">
-        Use <strong>↑↓ arrow keys</strong> or buttons above to change octaves while playing<br>
+        Use <strong>↑↓ as setas</strong> ou os botões acima para mudar as oitavas enquanto você toca<br>
         <small style="opacity: 0.7;">
-          Click anywhere to enable audio first | Press <strong>Space</strong> to stop all notes
+          Click em qualquer lugar para habilitar o audio | Aperte <strong>Espaço</strong> para mutar todas as notas tocando.
         </small>
         <small class="keys-help" style="opacity: 0.7;">
-          <br>Use <strong>W, E, T, Y AND U</strong> keys to play black notes
-          <br>Use <strong>A, S, D, F, G, H, J AND K</strong> keys to play white notes
+          <br>Use <strong>W, E, T, Y e U</strong> teclas para tocar as notas pretas
+          <br>Use <strong>A, S, D, F, G, H, J e K</strong> teclas para tocar as notas brancas
         </small>
       </div>
       <div class="settings">
@@ -50,8 +50,8 @@
     </div>
 
     <div class="frequency-display">
-      <div class="current-note" id="current-note">Click a key to play</div>
-      <div class="current-frequency" id="current-frequency">Frequency: -- Hz</div>
+      <div class="current-note" id="current-note">Aperte uma tecla ou click para tocar</div>
+      <div class="current-frequency" id="current-frequency">Frequências: -- Hz</div>
     </div>
   </div>
   <script src="index.js" type="module"></script>
