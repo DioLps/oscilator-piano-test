@@ -95,7 +95,7 @@
     .instructions {
       font-size: 0.9em;
       opacity: 0.8;
-      margin-bottom: 20px;
+      margin-bottom: 8px;
     }
 
     .piano {
@@ -181,13 +181,22 @@
     }
 
     .volume-control {
-      margin: 20px 0;
+      display: flex;
+      align-items: center;
       text-align: center;
     }
 
     .volume-slider {
       width: 200px;
       margin: 0 10px;
+    }
+
+    .off {
+      color: #ff6b6b;
+    }
+    
+    .on {
+      color: #6bff6b;
     }
   </style>
 </head>
@@ -214,6 +223,9 @@
         <label for="volume">Volume: </label>
         <input type="range" id="volume" class="volume-slider" min="0" max="100" value="30">
         <span id="volume-value">30%</span>
+      </div>
+      <div class="reverb-control" style="text-align:center; color:white;" onclick="toggleReverb()">
+        Reverb: <span id="reverb-status" class="off">Off</span> (Hold <strong>Ctrl</strong>) or click to toggle
       </div>
     </div>
 
@@ -331,6 +343,25 @@
     let activeOscillators = new Map(); // Track multiple playing notes
     let pressedKeys = new Set(); // Track currently pressed keys
     let pressedMouseKeys = new Set(); // Track mouse-pressed keys
+    // Reverb control
+    let reverbEnabled = false;
+    let reverbNode;
+    let reverbGain;
+
+    // Generate a basic impulse response for reverb
+    function createReverbBuffer() {
+      const duration = 2; // seconds
+      const rate = audioContext.sampleRate;
+      const length = rate * duration;
+      const impulse = audioContext.createBuffer(2, length, rate);
+      for (let chan = 0; chan < 2; chan++) {
+        const data = impulse.getChannelData(chan);
+        for (let i = 0; i < length; i++) {
+          data[i] = (Math.random() * 2 - 1) * (1 - i / length);
+        }
+      }
+      return impulse;
+    }
 
     // Vibrato control state
     let vibratoEnabled = false;
@@ -378,6 +409,16 @@
       delete entry.vibratoGain;
     }
 
+    // Toggle reverb effect on or off and update UI
+    function toggleReverb() {
+      reverbEnabled = !reverbEnabled;
+      // Ensure audioContext initialized
+      if (!audioContext) initAudio();
+      reverbGain.gain.setValueAtTime(reverbEnabled ? 1 : 0, audioContext.currentTime);
+      document.getElementById('reverb-status').textContent = reverbEnabled ? 'On' : 'Off';
+      document.getElementById('reverb-status').className = reverbEnabled ? 'on' : 'off';
+    }
+
     // Toggle vibrato on currently playing notes when Shift is pressed
     document.addEventListener('keydown', e => {
       if (e.key === 'Shift' && !vibratoEnabled) {
@@ -389,6 +430,20 @@
       if (e.key === 'Shift' && vibratoEnabled) {
         vibratoEnabled = false;
         activeOscillators.forEach((_, key) => removeVibratoFromOsc(key));
+      }
+    });
+
+    // Reverb toggle on Ctrl press
+    let ctrlToggleHandled = false;
+    document.addEventListener('keydown', e => {
+      if (e.key === 'Control' && !ctrlToggleHandled) {
+        ctrlToggleHandled = true;
+        toggleReverb();
+      }
+    });
+    document.addEventListener('keyup', e => {
+      if (e.key === 'Control') {
+        ctrlToggleHandled = false;
       }
     });
 
@@ -422,6 +477,16 @@
         gainNode = audioContext.createGain();
         gainNode.connect(audioContext.destination);
         gainNode.gain.value = 0.3; // Default volume
+        // Set up reverb nodes (wet path)
+        reverbNode = audioContext.createConvolver();
+        reverbNode.buffer = createReverbBuffer();
+        reverbGain = audioContext.createGain();
+        // start with reverb off
+        reverbGain.gain.value = 0;
+        // Connect wet path: from main gain to convolver to reverb gain to destination
+        gainNode.connect(reverbNode);
+        reverbNode.connect(reverbGain);
+        reverbGain.connect(audioContext.destination);
 
         console.log('AudioContext initialized successfully');
 
@@ -783,6 +848,12 @@
           }
         }, { once: true });
       });
+      // Click reverb status to toggle reverb
+      const reverbControl = document.getElementById('reverb-status');
+      if (reverbControl) {
+        reverbControl.style.cursor = 'pointer';
+        reverbControl.addEventListener('click', () => toggleReverb());
+      }
     });
   </script>
 </body>
