@@ -1,0 +1,245 @@
+body {
+  font-family: 'Arial', sans-serif;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  margin: 0;
+  padding: 20px;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.container {
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+  border-radius: 20px;
+  padding: 30px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  width: 100%;
+  max-width: 800px;
+  box-sizing: border-box;
+}
+
+h1 {
+  color: white;
+  text-align: center;
+  margin-bottom: 10px;
+  font-size: clamp(1.8em, 5vw, 2.5em);
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.controls {
+  text-align: center;
+  margin-bottom: 30px;
+  color: white;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 15px;
+  width: 100%;
+}
+
+.octave-controls {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  margin-bottom: 10px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.octave-btn {
+  background: rgba(255, 255, 255, 0.2);
+  color: white;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-radius: 10px;
+  padding: 10px 15px;
+  font-size: 1.2em;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  user-select: none;
+}
+
+.octave-btn:hover {
+  background: rgba(255, 255, 255, 0.3);
+  border-color: rgba(255, 255, 255, 0.5);
+  transform: translateY(-2px);
+}
+
+.octave-btn:active {
+  transform: translateY(0px);
+  background: rgba(255, 255, 255, 0.4);
+}
+
+.octave-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.octave-display {
+  font-size: 1.4em;
+  padding: 12px 25px;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 10px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  min-width: 120px;
+}
+
+.instructions {
+  font-size: 0.9em;
+  opacity: 0.8;
+  margin-bottom: 8px;
+}
+
+.piano {
+  display: flex;
+  justify-content: center;
+  align-items: flex-end;
+  position: relative;
+  margin: 16px auto;
+  height: 200px;
+  width: 100%;
+}
+
+.key {
+  cursor: pointer;
+  transition: all 0.1s ease;
+  user-select: none;
+  touch-action: none;
+  /* Prevent default touch behaviors */
+  border-radius: 0 0 8px 8px;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  padding-bottom: 10px;
+  font-weight: bold;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
+  position: absolute;
+}
+
+.key:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.key:active {
+  transform: translateY(2px);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.white-key {
+  width: clamp(30px, 8vw, 50px);
+  height: 200px;
+  background: linear-gradient(to bottom, #ffffff, #f0f0f0);
+  border: 2px solid #ccc;
+  z-index: 1;
+  color: #333;
+  position: relative;
+  flex: none;
+}
+
+.black-key {
+  width: clamp(20px, 5vw, 30px);
+  height: 120px;
+  background: linear-gradient(to bottom, #333, #000);
+  border: 2px solid #000;
+  z-index: 2;
+  color: #fff;
+  top: -12px;
+  /* lift to align with white key top border */
+  position: absolute;
+}
+
+.playing {
+  background: linear-gradient(to bottom, #ff6b6b, #ee5a52) !important;
+  transform: translateY(2px);
+}
+
+.frequency-display {
+  background: rgba(0, 0, 0, 0.7);
+  color: white;
+  padding: 15px;
+  border-radius: 10px;
+  margin: 0 auto;
+  width: 100%;
+  max-width: 414px;
+  text-align: center;
+  font-family: 'Courier New', monospace;
+  box-sizing: border-box;
+}
+
+.current-note {
+  font-size: 1.5em;
+  margin-bottom: 10px;
+}
+
+.current-frequency {
+  font-size: 1.1em;
+  opacity: 0.8;
+}
+
+.volume-control {
+  display: flex;
+  align-items: center;
+  text-align: center;
+  flex-wrap: wrap;
+  justify-content: center;
+  width: 100%;
+}
+
+.volume-slider {
+  width: clamp(120px, 60%, 200px);
+  margin: 0 10px;
+}
+
+.effect-box {
+  width: 100%;
+  display: flex;
+  align-content: center;
+  justify-content: center;
+  column-gap: 16px;
+  flex-wrap: wrap;
+  row-gap: 8px;
+}
+
+.effect-item input[type=checkbox] {
+  margin-right: 8px;
+  transform: scale(1.2);
+}
+
+/* Responsive adjustments for mobile */
+@media (max-width: 600px) {
+  body {
+    padding: 10px;
+  }
+
+  .container {
+    padding: 15px;
+    border-radius: 15px;
+  }
+
+  .instructions {
+    font-size: 0.85em;
+  }
+
+  .octave-btn {
+    padding: 8px 12px;
+    font-size: 1em;
+  }
+
+  .octave-display {
+    font-size: 1em;
+    padding: 8px 12px;
+  }
+
+  .current-note {
+    font-size: 1.2em;
+  }
+
+  .current-frequency {
+    font-size: 0.9em;
+  }
+}
